@@ -82,39 +82,39 @@ func loadLib(lib, pin, label string) (*pkcs11.Ctx, uint, *pkcs11.SessionHandle, 
 }
 
 func (csp *impl) getSession() (session pkcs11.SessionHandle) {
-	select {
-	case session = <-csp.sessions:
-		logger.Debugf("Reusing existing pkcs11 session %+v on slot %d\n", session, csp.slot)
+	// select {
+	// case session = <-csp.sessions:
+	// 	logger.Debugf("Reusing existing pkcs11 session %+v on slot %d\n", session, csp.slot)
 
-	default:
-		// cache is empty (or completely in use), create a new session
-		var s pkcs11.SessionHandle
-		var err error
-		for i := 0; i < 10; i++ {
-			s, err = csp.ctx.OpenSession(csp.slot, pkcs11.CKF_SERIAL_SESSION|pkcs11.CKF_RW_SESSION)
-			if err != nil {
-				logger.Warningf("OpenSession failed, retrying [%s]\n", err)
-			} else {
-				break
-			}
-		}
+	// default:
+	// cache is empty (or completely in use), create a new session
+	var s pkcs11.SessionHandle
+	var err error
+	for i := 0; i < 10; i++ {
+		s, err = csp.ctx.OpenSession(csp.slot, pkcs11.CKF_SERIAL_SESSION|pkcs11.CKF_RW_SESSION)
 		if err != nil {
-			panic(fmt.Errorf("OpenSession failed [%s]", err))
+			logger.Warningf("OpenSession failed, retrying [%s]\n", err)
+		} else {
+			break
 		}
-		logger.Debugf("Created new pkcs11 session %+v on slot %d\n", s, csp.slot)
-		session = s
 	}
+	if err != nil {
+		panic(fmt.Errorf("OpenSession failed [%s]", err))
+	}
+	logger.Debugf("Created new pkcs11 session %+v on slot %d\n", s, csp.slot)
+	session = s
+	// }
 	return session
 }
 
 func (csp *impl) returnSession(session pkcs11.SessionHandle) {
-	select {
-	case csp.sessions <- session:
-		// returned session back to session cache
-	default:
-		// have plenty of sessions in cache, dropping
-		csp.ctx.CloseSession(session)
-	}
+	// select {
+	// case csp.sessions <- session:
+	// 	// returned session back to session cache
+	// default:
+	// 	// have plenty of sessions in cache, dropping
+	csp.ctx.CloseSession(session)
+	// }
 }
 
 // Look for an EC key by SKI, stored in CKA_ID
