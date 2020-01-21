@@ -1,0 +1,82 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.pkcs11_proxy.pkcs";
+option java_outer_classname = "PKCSProto";
+
+package pkcs;
+
+// The greeting service definition.
+service PKCS {
+  rpc getECKey (getECKeyRequest) returns (getECKeyReply) {}
+  rpc generateECKey (generateECKeyRequest) returns (generateECKeyReply) {}
+  rpc signP11ECDSA (signP11ECDSARequest) returns (signP11ECDSAReply) {}
+  rpc verifyP11ECDSA (verifyP11ECDSARequest) returns (verifyP11ECDSAReply) {}
+  rpc getSecretValue (getSecretValueRequest) returns (getSecretValueReply) {}
+}
+
+// The request message containing the user's name.
+message getECKeyRequest {
+  required bytes ski = 1;
+}
+
+message getSecretValueRequest{
+  required bytes ski = 1;
+}
+
+message getSecretValueReply{
+  required bytes value = 1;
+}
+
+
+message generateECKeyRequest {
+  required bytes marshaledOid = 3;
+  required bool ephemeral=2;
+}
+
+message signP11ECDSARequest {
+  required bytes ski = 1;
+  required bytes msg = 2;
+}
+
+message verifyP11ECDSARequest {
+  required bytes ski = 1;
+  required bytes msg = 2;
+  required bytes R = 3;
+  required bytes S = 4;
+  required int32 byteSize = 5;
+}
+
+
+
+// The response message containing the greetings
+message getECKeyReply {
+  required bytes ecpt = 2; 
+  required bytes marshaledOid = 3;
+}
+
+message generateECKeyReply {
+  required bytes ski = 1;
+  required bytes ecpt = 2;
+}
+message signP11ECDSAReply {
+  required bytes R = 1;
+  required bytes S = 2;
+}
+message verifyP11ECDSAReply {
+  required bool valid = 1;
+}

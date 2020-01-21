@@ -20,6 +20,7 @@ package factory
 import (
 	"github.com/hyperledger/fabric/bccsp"
 	"github.com/hyperledger/fabric/bccsp/pkcs11"
+	"github.com/hyperledger/fabric/bccsp/remote"
 	"github.com/pkg/errors"
 )
 
@@ -29,6 +30,7 @@ type FactoryOpts struct {
 	SwOpts       *SwOpts            `mapstructure:"SW,omitempty" json:"SW,omitempty" yaml:"SwOpts"`
 	PluginOpts   *PluginOpts        `mapstructure:"PLUGIN,omitempty" json:"PLUGIN,omitempty" yaml:"PluginOpts"`
 	Pkcs11Opts   *pkcs11.PKCS11Opts `mapstructure:"PKCS11,omitempty" json:"PKCS11,omitempty" yaml:"PKCS11"`
+	RemoteOpts   *remote.RemoteOpts `mapstructure:"REMOTE,omitempty" json:"REMOTE,omitempty" yaml:"REMOTE"`
 }
 
 // InitFactories must be called before using factory interfaces
